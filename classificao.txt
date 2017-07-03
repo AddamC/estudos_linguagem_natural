@@ -1,0 +1,15 @@
+{
+    "lang": "PT",
+    "sentence": "teste de um macaco que não deu certo e virou um robo",
+    "classificação": {
+        "V": "virou",
+        "PREP": "de",
+        "ART": "um",
+        "N": "macaco",
+        "null": "robo",
+        "ADV": "não",
+        "ADJ": "certo",
+        "PRO-KS-REL": "que",
+        "KC": "e"
+    }
+}
