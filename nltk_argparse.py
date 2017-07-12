@@ -3,79 +3,62 @@ import traceback
 
 import nltk
 from nltk.corpus import mac_morpho, brown
-from nltk.tokenize import word_tokenize, PunktSentenceTokenizer
+from nltk.tokenize import word_tokenize
+from nltk.sentiment import SentimentAnalyzer, util
+
 import json
 
-def processar(args):
-    frase = args.sentence
+def process_sentence(d):
+    d_tagged_sent = {}
+    file = open("tagged_sents_PT.txt", "w")  # Arquivo de saída
 
-    d = {'lang': args.lang,
-         'sentence': args.sentence} # define os valores basicos para o json
-    classificacao = {}
+    if d["lang"] == "PT":
+        tagged_sent = process_portuguese(d) # tupla da frase classificada
+    elif d["lang"] == "EN":
+        tagged_sent = process_english(d)
 
-    arquivo = open("classificao.txt", "w") # Arquivo de saída
+    for v, k in tagged_sent:
+        if v in d.keys():
+            d_tagged_sent[k].append(v)
+        else:
+            d_tagged_sent[k] = v
 
+    d['tagged sentence'] = d_tagged_sent
+    # d['sentence polarity']
+
+    string = json.dumps(d, indent=4, ensure_ascii=False, sort_keys=False)
+
+    print(string)
+
+    #arquivo.write("\nmac_morpho: " + str (unigram_tagger_mac_morpho.tag (word_tokenize (frase))))
+    # file.write(string)
+    # file.close()
+
+def process_portuguese(d):
     mac_morpho_tagged_sents = mac_morpho.tagged_sents () # frases classificadas da mac_morpho
-    mac_morpho_sents = mac_morpho.sents ()
 
     # classificador unigrama - UnigramTagger(), que recebe um corpo
     # de texto já classificado para treino como parâmetro para o método
     unigram_tagger_mac_morpho = nltk.UnigramTagger (mac_morpho_tagged_sents)
 
-    frase_classificada = unigram_tagger_mac_morpho.tag (word_tokenize (frase))
+    tagged_sentence = unigram_tagger_mac_morpho.tag(word_tokenize(d["sentence"]))
 
-    for v, k in frase_classificada:
-        if v in d.keys():
-            classificacao[k].append(v)
-        else:
-            classificacao[k] = v
+    return tagged_sentence
 
-    d['classificação'] = classificacao
-
-    # string = json.dumps(d, indent=4, sort_keys=True)
-    string = json.dumps(d, indent=4, ensure_ascii=False)
-
-    print(string)
-
-
-    #arquivo.write("\nmac_morpho: " + str (unigram_tagger_mac_morpho.tag (word_tokenize (frase))))
-    arquivo.write(string)
-    arquivo.close()
-
-def processarIngles(frase):
-    arquivo = open("classificaoEN.txt", "w")
-    texto_treino = brown
-    custom_sent_tokenizer = PunktSentenceTokenizer(texto_treino)
-    tokenized = custom_sent_tokenizer.tokenize (frase)
-    try:
-        for i in tokenized:
-            words = nltk.word_tokenize(i)
-            tagged = nltk.pos_tag(words)
-            # arquivo.write(tagged)
-            arquivo.write(tagged)
-
-    except:
-        traceback.print_exec()
-    finally:
-        arquivo.close()
+def process_english(d):
+    tagged_sentence = nltk.pos_tag(word_tokenize(d["sentence"]))
+    return tagged_sentence
 
 def Main():
-    # arquivo = open("classificacoes.json", "w")
+    parser = argparse.ArgumentParser (description="Natural Language Processing")
 
-    parser = argparse.ArgumentParser (description="processamento de linuagem natural")
-
-    # parser.add_argument ("process", help="increase output verbosity")
     parser.add_argument ("sentence", type=str, help="value to pass as phrase")
     parser.add_argument ("lang", type=str, help="choose the language to process")
 
     args = parser.parse_args ()
+    dictionary = {'lang': args.lang, 'sentence': args.sentence} # define os valores basicos para o json
 
-    processar(args)
-
-    # if args.lang == "PT":
-    #     processarPortuges (frase)
-    # elif args.lang == "EN":
-    #     processarIngles (frase)
+    process_sentence(dictionary)
 
 if __name__ == '__main__':
     Main()
