@@ -1,30 +1,31 @@
 {
-    "positive_analysis": {
-        "positive_percentage": "11.76",
-        "positive_words": [
-            "delici",
-            "tasti"
-        ],
-        "positive_counter": 2
-    },
-    "negative_analysis": {
-        "negative_words": [
+    "sentence": "the main meal was very bad with horrible taste, but the dessert was delicious and tasty",
+    "lang": "EN",
+    "sentence polarity": 1.0,
+    "negative analysis": {
+        "negative percentage": 11.76,
+        "negative words": [
             "bad",
             "horribl"
         ],
-        "negative_counter": 2,
-        "negative_percentage": "11.76"
+        "negative counter": 2
     },
-    "tagged_sentence": {
-        "CC": "and",
-        "IN": "with",
-        "DT": "the",
-        "JJ": "tasty",
+    "positive analysis": {
+        "positive percentage": 11.76,
+        "positive counter": 2,
+        "positive words": [
+            "delici",
+            "tasti"
+        ]
+    },
+    "tagged sentence": {
+        "VBD": "was",
         ",": ",",
-        "RB": "very",
         "NN": "dessert",
-        "VBD": "was"
-    },
-    "lang": "EN",
-    "sentence": "the main meal was very bad with horrible taste, but the dessert was delicious and tasty"
+        "IN": "with",
+        "CC": "and",
+        "JJ": "tasty",
+        "DT": "the",
+        "RB": "very"
+    }
 }
