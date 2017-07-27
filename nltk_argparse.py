@@ -11,7 +11,7 @@ import json
 
 def process_sentence(d):
     d_tagged_sent = {}
-    file = open("tagged_sents_PT.txt", "w")  # Arquivo de saída
+    file = open("sentence_analyse_json.txt", "w")  # Arquivo de saída
 
     if d["lang"] == "PT":
         tagged_sent = process_portuguese(d) # tupla da frase classificada
@@ -28,6 +28,7 @@ def process_sentence(d):
 
     # sentiment analysis
     check_negative_words(d)
+    check_positive_words(d)
 
     # d['sentence polarity']
 
@@ -35,14 +36,14 @@ def process_sentence(d):
 
     print(string)
 
-    #arquivo.write("\nmac_morpho: " + str (unigram_tagger_mac_morpho.tag (word_tokenize (frase))))
-    # file.write(string)
-    # file.close()
+    # arquivo.write("\nmac_morpho: " + str (unigram_tagger_mac_morpho.tag (word_tokenize (frase))))
+    file.write(string)
+    file.close()
 
 def check_negative_words(d):
     ps = PorterStemmer()
 
-    negative_words = ['bad', 'horrible', 'death', 'suffer', 'pain', 'awfull', 'error', 'fail']
+    negative_words = ['bad', 'horrible', 'death', 'suffer', 'pain', 'awfull', 'error', 'fail', 'poor']
     words = word_tokenize(d.get('sentence'))
 
     np_negative_words = [ps.stem(w) for w in np.array(negative_words)]
@@ -65,10 +66,41 @@ def check_negative_words(d):
     dict_negative_words['negative_counter'] = negative_counter
     dict_negative_words['negative_words'] = list_negative
 
-    negative_perc = negative_counter/len(np_words)
+    negative_perc = (negative_counter/len(np_words)) * 100
     dict_negative_words['negative_percentage'] = str(round(negative_perc, 2))
 
     d['negative_analysis'] = dict_negative_words
+
+def check_positive_words(d):
+    ps = PorterStemmer()
+
+    positive_words = ['good', 'tasty', 'best', 'success', 'happy', 'nice', 'delicious']
+    words = word_tokenize(d.get('sentence'))
+
+    np_positive_words = [ps.stem(w) for w in np.array(positive_words)]
+    np_words = [ps.stem(w) for w in np.array(words)]
+
+    dict_positive_words = {}
+
+    print(np_positive_words)
+    print(np_words)
+
+    positive_counter = 0
+    list_positive = []
+
+    for w in np_words:
+        for neg_w in np_positive_words:
+            if w == neg_w:
+                positive_counter += 1
+                list_positive.append(w)
+
+    dict_positive_words['positive_counter'] = positive_counter
+    dict_positive_words['positive_words'] = list_positive
+
+    positive_perc = (positive_counter/len(np_words)) * 100
+    dict_positive_words['positive_percentage'] = str(round(positive_perc, 2))
+
+    d['positive_analysis'] = dict_positive_words
 
 def process_portuguese(d):
     mac_morpho_tagged_sents = mac_morpho.tagged_sents () # frases classificadas da mac_morpho
